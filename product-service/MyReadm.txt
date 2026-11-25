@@ -1,0 +1,13 @@
+
+Here is a line-by-line breakdown of how it works:
+1. Arrange (Setup)
+Create test data: It initializes a Product object with "LAPTOP-001" as its skuCode.
+(Notice this version of the test passes the Product entity directly into createProduct(), rather than a DTO).
+
+Stub the repository (when...thenReturn):
+It tells the fake productRepository to return true whenever existsBySkuCode("LAPTOP-001") is called.
+This simulates a database that already contains a product with that SKU.
+
+2. Act & Assert (Execution & Verification)
+assertThrows(...): It calls productService.createProduct(product) inside a lambda expression (() -> ...) and expects the method to immediately fail by throwing a custom DuplicateSkuException. If no exception (or the wrong exception) is thrown, the test fails.
+verify(..., never()): This is a crucial safety check. It confirms that productRepository.save() was never called, ensuring no duplicate record is written to MongoDB after the exception is triggered.
