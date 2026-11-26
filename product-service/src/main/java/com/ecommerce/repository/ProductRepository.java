@@ -7,6 +7,4 @@ public interface ProductRepository extends MongoRepository<Product, String> {
 
     //Spring Data MongoDB will automatically derive the query from the method name.
     boolean existsBySkuCode(String skuCode);
-
-
 }
