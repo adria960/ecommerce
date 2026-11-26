@@ -11,3 +11,32 @@ This simulates a database that already contains a product with that SKU.
 2. Act & Assert (Execution & Verification)
 assertThrows(...): It calls productService.createProduct(product) inside a lambda expression (() -> ...) and expects the method to immediately fail by throwing a custom DuplicateSkuException. If no exception (or the wrong exception) is thrown, the test fails.
 verify(..., never()): This is a crucial safety check. It confirms that productRepository.save() was never called, ensuring no duplicate record is written to MongoDB after the exception is triggered.
+
+------------------------------------
+3. Start Product Service
+Run ProductServiceApplication directly from IntelliJ.
+4. Verify using Postman
+POST http://localhost:8081/api/products
+
+Content-Type: application/json
+{
+    "skuCode": "LAPTOP-001",
+    "name": "Laptop",
+    "description": "Lenovo ThinkPad",
+    "price": 999.99
+}
+resp
+{
+    "id": "6b0780de803bca59222a79b3",
+    "skuCode": "LAPTOP-001",
+    "name": "Laptop",
+    "description": "Lenovo ThinkPad",
+    "price": 999.99
+}
+
+Then verify the remaining endpoints:
+Method	URL
+GET	/api/products
+GET	/api/products/{id}
+PUT	/api/products/{id}
+DELETE	/api/products/{id}
