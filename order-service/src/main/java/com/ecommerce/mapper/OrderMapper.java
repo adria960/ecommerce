@@ -4,17 +4,21 @@ import com.ecommerce.dto.*;
 import com.ecommerce.model.Order;
 import com.ecommerce.model.OrderItem;
 
+import java.util.List;
+
 public final class OrderMapper {
 
     private OrderMapper() {
     }
 
-    public static Order toEntity(OrderRequest request) {
+    public static Order toEntity(
+            OrderRequest request,
+            List<PricedOrderItem> pricedItems) {
 
         Order order = new Order();
         order.setCustomerId(request.customerId());
 
-        request.items().forEach(item ->
+        pricedItems.forEach(item ->
                 order.addItem(toItemEntity(item))
         );
 
@@ -22,7 +26,7 @@ public final class OrderMapper {
     }
 
     private static OrderItem toItemEntity(
-            OrderItemRequest request) {
+            PricedOrderItem request) {
 
         OrderItem item = new OrderItem();
 

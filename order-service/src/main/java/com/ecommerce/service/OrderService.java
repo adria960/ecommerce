@@ -1,6 +1,9 @@
 package com.ecommerce.service;
 
+import com.ecommerce.client.InventoryClient;
+import com.ecommerce.client.ProductClient;
 import com.ecommerce.dto.*;
+import com.ecommerce.exception.InsufficientStockException;
 import com.ecommerce.exception.InvalidOrderException;
 import com.ecommerce.exception.OrderNotFoundException;
 import com.ecommerce.mapper.OrderMapper;
@@ -11,45 +14,77 @@ import com.ecommerce.repository.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.UUID;
+import java.util.Set;
 
+/**
+ * OrderService now acts as an orchestrator for order creation.
+ */
 @Service
-@Transactional(readOnly = true)
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final ProductClient productClient;
+    private final InventoryClient inventoryClient;
+    private final OrderPersistenceService orderPersistenceService;
 
-    public OrderService(OrderRepository orderRepository) {
+    public OrderService(
+            OrderRepository orderRepository,
+            ProductClient productClient,
+            InventoryClient inventoryClient,
+            OrderPersistenceService orderPersistenceService) {
+
         this.orderRepository = orderRepository;
+        this.productClient = productClient;
+        this.inventoryClient = inventoryClient;
+        this.orderPersistenceService = orderPersistenceService;
     }
 
-    // - DTO mapping takes place inside the transaction, so lazy-loaded order items remain accessible.
-    @Transactional
+    // CREATE - no local transaction here
     public OrderResponse createOrder(OrderRequest request) {
 
         validateOrder(request);
 
-        Order order = OrderMapper.toEntity(request);
+        List<PricedOrderItem> pricedItems = new ArrayList<>();
 
-        order.setOrderNumber(UUID.randomUUID().toString());
-        order.setStatus(OrderStatus.PENDING);
-        order.setCreatedAt(Instant.now());
-        order.setTotalAmount(calculateTotal(request));
+        for (OrderItemRequest item : request.items()) {
 
-        //
-        Order savedOrder = orderRepository.save(order);
+            // Get product from product-service
+            ProductResponse product =
+                    productClient.getProduct(item.skuCode());
 
-        return OrderMapper.toResponse(savedOrder);
+            // Check availability in inventory-service
+            boolean available = inventoryClient.isInStock(
+                    item.skuCode(), item.quantity());
+
+            if (!available) {
+                throw new InsufficientStockException(
+                        item.skuCode());
+            }
+
+            // If all okay - create PricedOrderItem and...
+            pricedItems.add(new PricedOrderItem(
+                    item.skuCode(),
+                    item.quantity(),
+                    product.price()
+            ));
+        }
+
+        // ...save order to dbase.
+        return orderPersistenceService.saveOrder(
+                request, pricedItems);
     }
 
+    @Transactional(readOnly = true)
     public OrderResponse getOrderById(Long id) {
 
-        return OrderMapper.toResponse(findOrderOrThrow(id));
+        return OrderMapper.toResponse(
+                findOrderOrThrow(id));
     }
 
+    @Transactional(readOnly = true)
     public List<OrderResponse> getAllOrders() {
 
         return orderRepository.findAll()
@@ -58,6 +93,7 @@ public class OrderService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<OrderResponse> getOrdersByCustomerId(
             String customerId) {
 
@@ -67,23 +103,20 @@ public class OrderService {
                 .toList();
     }
 
-    //  - We do not explicitly call save() in cancelOrder(). Hibernate dirty checking will persist the status change.
-    //  - DTO mapping takes place inside the transaction, so lazy-loaded order items remain accessible.
     @Transactional
     public OrderResponse cancelOrder(Long id) {
 
-        // 1. Hibernate loads the entity from MySQL and caches a snapshot in memory
         Order order = findOrderOrThrow(id);
-
-        // 2. You modify the Java object directly
         order.setStatus(OrderStatus.CANCELLED);
-        // 3. No repository.save() needed!
-        // When this method finishes, @Transactional commits and Hibernate automatically runs:
-        // UPDATE orders SET status = ? WHERE id = ?
 
         return OrderMapper.toResponse(order);
     }
 
+    /**
+     *
+     * @param id
+     * @return Order
+     */
     private Order findOrderOrThrow(Long id) {
 
         return orderRepository.findById(id)
@@ -91,15 +124,10 @@ public class OrderService {
                         new OrderNotFoundException(id));
     }
 
-    private BigDecimal calculateTotal(OrderRequest request) {
-
-        return request.items()
-                .stream()
-                .map(item -> item.price().multiply(
-                        BigDecimal.valueOf(item.quantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
+    /**
+     *
+     * @param request
+     */
     private void validateOrder(OrderRequest request) {
 
         if (request.customerId() == null ||
@@ -113,6 +141,8 @@ public class OrderService {
             throw new InvalidOrderException(
                     "Order must contain at least one item");
         }
+
+        Set<String> skuCodes = new HashSet<>();
 
         for (OrderItemRequest item : request.items()) {
 
@@ -133,46 +163,39 @@ public class OrderService {
                         "Quantity must be positive");
             }
 
-            if (item.price() == null ||
-                    item.price().compareTo(BigDecimal.ZERO) <= 0) {
+            if (!skuCodes.add(item.skuCode())) {
                 throw new InvalidOrderException(
-                        "Price must be positive");
+                        "Duplicate SKU in order: "
+                                + item.skuCode());
             }
         }
     }
 }
-/*
-Important implementation details
-    - @Transactional(readOnly = true) is the default for service methods.
-    - Method-level @Transactional overrides it for create and cancel operations.
-    - We do not explicitly call save() in cancelOrder(). Hibernate dirty checking will persist the status change.
-    - CascadeType.ALL allows order items to be persisted together with the order.
-    - DTO mapping takes place inside the transaction, so lazy-loaded order items remain accessible.
- */
 
 /*
-    Dirty checking is a feature in database frameworks (like Hibernate/JPA) that automatically tracks changes
-    made to an object in memory and updates the database for you—without you having to manually call a save() or update() method.
- */
+    I have introduced one additional business rule: duplicate SKUs within the same order are rejected.
+    This prevents multiple order lines from independently passing availability checks against the same stock quantity.
+    An alternative would be to aggregate their quantities.
 
-/*
-for a service using MySQL (JPA/Hibernate) and @Transactional, dirty checking works automatically.
-When you wrap a method in @Transactional, Spring and Hibernate manage the database session from the moment
- the method starts until it finishes.
- */
+    9. Why a separate OrderPersistenceService?
+    This is an important Spring interview question.
 
-/*
-3 Rules to keep in mind so it doesn't trip you up - dirty checking
+    Why not simply create a transactional method inside OrderService?
+    public OrderResponse createOrder(OrderRequest request) {
 
-• It must be inside @Transactional:
-  Without @Transactional on the method (or class), Hibernate closes its tracking session right after findById(),
-  so changes made afterward won't be detected or saved.
+        // Remote REST calls
 
-• The object must come from the database first:
-  Dirty checking only watches "managed" entities loaded via findById() (or similar queries).   ☺
-  If you create a new Product() yourself and set its ID, Hibernate won't auto-save it without save().
+        return saveOrder(request);
+    }
 
-• A save() call is harmless (just redundant):
-  If a developer still writes productRepository.save(product) at the end of a @Transactional method,
-  it won't break anything—Hibernate simply sees the entity is already tracked and performs the same single UPDATE.
+    @Transactional
+    public OrderResponse saveOrder(OrderRequest request) {
+        // Database persistence
+    }
+
+    This would encounter the Spring self-invocation problem. Read in doc.
+    Spring's default proxy-based transaction management intercepts calls coming through the proxy.
+    A direct call between methods of the same object bypasses it.
+
+    By using a separate Spring-managed bean, our call passes through the transaction proxy.
  */
