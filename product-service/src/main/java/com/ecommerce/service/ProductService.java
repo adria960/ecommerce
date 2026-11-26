@@ -85,6 +85,17 @@ public class ProductService {
                 .orElseThrow(() -> new ProductNotFoundException(id));
     }
 
+
+    // For Order service
+    public ProductResponse getProductBySkuCode(String skuCode) {
+
+        Product product = productRepository.findBySkuCode(skuCode)
+                .orElseThrow(() -> new ProductNotFoundException(
+                        "SKU: " + skuCode));
+
+        return ProductMapper.toResponse(product);
+    }
+
     private void validateProduct(ProductRequest request) {
         validatePrice(request.price());
         validateName(request.name());

@@ -2,7 +2,7 @@ package com.ecommerce.exception;
 
 public class ProductNotFoundException extends RuntimeException {
 
-    public ProductNotFoundException(String id) {
-        super("Product with ID " + id + " not found");
+    public ProductNotFoundException(String identifier) {
+        super("Product not found: " + identifier);
     }
 }

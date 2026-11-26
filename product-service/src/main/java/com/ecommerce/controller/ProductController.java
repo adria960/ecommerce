@@ -85,6 +85,17 @@ public class ProductController {
 
         return ResponseEntity.noContent().build();
     }
+
+    // for Order service
+    //GET http://localhost:8081/api/products/sku/LAPTOP-001
+    @GetMapping("/sku/{skuCode}")
+    public ResponseEntity<ProductResponse> getProductBySkuCode(
+            @PathVariable String skuCode) {
+
+        return ResponseEntity.ok(
+                productService.getProductBySkuCode(skuCode)
+        );
+    }
 }
 /*
     ResponseEntity

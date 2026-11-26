@@ -10,3 +10,4 @@ public record ProductResponse(
         BigDecimal price
 ) {
 }
+
