@@ -20,3 +20,61 @@ Create order through API Gateway
             }
         ]
     }
+
+
+    ----------------------------- T E S T I N G ----------------------------------------
+ 11. Postman – Obtain an access token
+    Open a request in Postman and navigate to the Authorization tab.
+
+    Select OAuth 2.0 and configure:
+        Setting	Value
+        Grant Type	Authorization Code (With PKCE)
+        Callback URL	https://oauth.pstmn.io/v1/callback
+        Auth URL	http://localhost:8180/realms/ecommerce/protocol/openid-connect/auth
+        Access Token URL	http://localhost:8180/realms/ecommerce/protocol/openid-connect/token
+        Client ID	ecommerce-client
+        Client Secret	Empty
+        Code Challenge Method	SHA-256
+        Scope	openid profile
+
+    Click Get New Access Token.
+
+    Authenticate as customer1 on the Keycloak login page.
+
+    After successful authentication, select Use Token.
+
+    Postman will send:
+    Authorization: Bearer eyJhbGciOiJSUzI1NiIs...
+
+
+    12. Postman verification
+    Start Keycloak, API Gateway and all existing microservices.
+
+    Scenario	                            Expected HTTP status
+    ----------------------------------------------------------
+    Request without access token	        401 Unauthorized
+    Request with invalid access token	    401 Unauthorized
+    Request with expired access token	    401 Unauthorized
+    Request with valid access token	        200 OK
+    Create order with valid access token	201 Created
+
+    For example:
+    GET http://localhost:8080/api/products
+
+
+    Or:
+    POST http://localhost:8080/api/orders
+
+
+    {
+        "customerId": "C001",
+        "items": [
+            {
+                "skuCode": "LAPTOP-001",
+                "quantity": 2
+            }
+        ]
+    }
+
+
+    Our existing REST communication, Resilience4J, Kafka publishing and Notification Service should continue working unchanged.

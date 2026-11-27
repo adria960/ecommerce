@@ -4,3 +4,18 @@ services:
     container_name: ecommerce-kafka
     ports:
       - "9092:9092"
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1.4
+    container_name: ecommerce-keycloak
+    command: start-dev
+    ports:
+      - "8180:8080"
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    volumes:
+      - keycloak-data:/opt/keycloak/data
+
+volumes:
+  keycloak-data:
