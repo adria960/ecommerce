@@ -1,0 +1,316 @@
+{
+  "circuitBreakerEvents": [
+    {
+      "circuitBreakerName": "productService",
+      "type": "SUCCESS",
+      "creationTime": "2026-11-27T00:01:23.070819900+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": 51,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "inventoryService",
+      "type": "SUCCESS",
+      "creationTime": "2026-11-27T00:01:23.093903500+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": 14,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "SUCCESS",
+      "creationTime": "2026-11-27T00:01:23.854577900+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": 6,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "inventoryService",
+      "type": "SUCCESS",
+      "creationTime": "2026-11-27T00:01:23.865757200+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": 11,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "ERROR",
+      "creationTime": "2026-11-27T00:01:35.509108200+01:00[Europe/Belgrade]",
+      "errorMessage": "org.springframework.web.client.ResourceAccessException: I/O error on GET request for \"http://localhost:8081/api/products/sku/LAPTOP-001\": Connection refused: getsockopt",
+      "durationInMs": 20,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "ERROR",
+      "creationTime": "2026-11-27T00:01:36.032893700+01:00[Europe/Belgrade]",
+      "errorMessage": "org.springframework.web.client.ResourceAccessException: I/O error on GET request for \"http://localhost:8081/api/products/sku/LAPTOP-001\": Connection refused: getsockopt",
+      "durationInMs": 16,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "ERROR",
+      "creationTime": "2026-11-27T00:01:36.547243400+01:00[Europe/Belgrade]",
+      "errorMessage": "org.springframework.web.client.ResourceAccessException: I/O error on GET request for \"http://localhost:8081/api/products/sku/LAPTOP-001\": Connection refused: getsockopt",
+      "durationInMs": 2,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "FAILURE_RATE_EXCEEDED",
+      "creationTime": "2026-11-27T00:01:36.548236900+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "STATE_TRANSITION",
+      "creationTime": "2026-11-27T00:01:36.550757100+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": "CLOSED_TO_OPEN"
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "STATE_TRANSITION",
+      "creationTime": "2026-11-27T00:01:46.564777+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": "OPEN_TO_HALF_OPEN"
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "ERROR",
+      "creationTime": "2026-11-27T00:03:01.981548900+01:00[Europe/Belgrade]",
+      "errorMessage": "org.springframework.web.client.ResourceAccessException: I/O error on GET request for \"http://localhost:8081/api/products/sku/LAPTOP-001\": Connection refused: getsockopt",
+      "durationInMs": 3,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "ERROR",
+      "creationTime": "2026-11-27T00:03:02.497469+01:00[Europe/Belgrade]",
+      "errorMessage": "org.springframework.web.client.ResourceAccessException: I/O error on GET request for \"http://localhost:8081/api/products/sku/LAPTOP-001\": Connection refused: getsockopt",
+      "durationInMs": 2,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "ERROR",
+      "creationTime": "2026-11-27T00:03:02.728436300+01:00[Europe/Belgrade]",
+      "errorMessage": "org.springframework.web.client.ResourceAccessException: I/O error on GET request for \"http://localhost:8081/api/products/sku/LAPTOP-001\": Connection refused: getsockopt",
+      "durationInMs": 2,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "STATE_TRANSITION",
+      "creationTime": "2026-11-27T00:03:02.728436300+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": "HALF_OPEN_TO_OPEN"
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "NOT_PERMITTED",
+      "creationTime": "2026-11-27T00:03:03.007626300+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "NOT_PERMITTED",
+      "creationTime": "2026-11-27T00:03:03.237414+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "NOT_PERMITTED",
+      "creationTime": "2026-11-27T00:03:03.241031+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "NOT_PERMITTED",
+      "creationTime": "2026-11-27T00:03:03.896265100+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "NOT_PERMITTED",
+      "creationTime": "2026-11-27T00:03:04.769989500+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "NOT_PERMITTED",
+      "creationTime": "2026-11-27T00:03:05.424537800+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "NOT_PERMITTED",
+      "creationTime": "2026-11-27T00:03:05.954585600+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "NOT_PERMITTED",
+      "creationTime": "2026-11-27T00:03:06.342733700+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "NOT_PERMITTED",
+      "creationTime": "2026-11-27T00:03:07.063568800+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "NOT_PERMITTED",
+      "creationTime": "2026-11-27T00:03:07.505254400+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "NOT_PERMITTED",
+      "creationTime": "2026-11-27T00:03:07.920734200+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "NOT_PERMITTED",
+      "creationTime": "2026-11-27T00:03:08.977057200+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "NOT_PERMITTED",
+      "creationTime": "2026-11-27T00:03:09.392577900+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "STATE_TRANSITION",
+      "creationTime": "2026-11-27T00:03:12.730852700+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": "OPEN_TO_HALF_OPEN"
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "SUCCESS",
+      "creationTime": "2026-11-27T00:04:02.269366500+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": 295,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "inventoryService",
+      "type": "SUCCESS",
+      "creationTime": "2026-11-27T00:04:02.282107800+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": 12,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "SUCCESS",
+      "creationTime": "2026-11-27T00:05:49.685981700+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": 12,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "inventoryService",
+      "type": "SUCCESS",
+      "creationTime": "2026-11-27T00:05:49.698494500+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": 13,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "SUCCESS",
+      "creationTime": "2026-11-27T00:05:50.032638800+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": 8,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "STATE_TRANSITION",
+      "creationTime": "2026-11-27T00:05:50.033173+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": null,
+      "stateTransition": "HALF_OPEN_TO_CLOSED"
+    },
+    {
+      "circuitBreakerName": "inventoryService",
+      "type": "SUCCESS",
+      "creationTime": "2026-11-27T00:05:50.043777700+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": 10,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "SUCCESS",
+      "creationTime": "2026-11-27T00:05:52.624985400+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": 10,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "inventoryService",
+      "type": "SUCCESS",
+      "creationTime": "2026-11-27T00:05:52.635134100+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": 10,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "productService",
+      "type": "SUCCESS",
+      "creationTime": "2026-11-27T00:05:52.937691300+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": 7,
+      "stateTransition": null
+    },
+    {
+      "circuitBreakerName": "inventoryService",
+      "type": "SUCCESS",
+      "creationTime": "2026-11-27T00:05:52.948243100+01:00[Europe/Belgrade]",
+      "errorMessage": null,
+      "durationInMs": 10,
+      "stateTransition": null
+    }
+  ]
+}

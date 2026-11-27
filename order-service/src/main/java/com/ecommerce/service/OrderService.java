@@ -3,21 +3,20 @@ package com.ecommerce.service;
 import com.ecommerce.client.InventoryClient;
 import com.ecommerce.client.ProductClient;
 import com.ecommerce.dto.*;
+import com.ecommerce.event.OrderPlacedEvent;
 import com.ecommerce.exception.InsufficientStockException;
 import com.ecommerce.exception.InvalidOrderException;
 import com.ecommerce.exception.OrderNotFoundException;
 import com.ecommerce.mapper.OrderMapper;
 import com.ecommerce.model.Order;
 import com.ecommerce.model.OrderStatus;
+import com.ecommerce.producer.OrderEventProducer;
 import com.ecommerce.repository.OrderRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * OrderService now acts as an orchestrator for order creation.
@@ -30,19 +29,27 @@ public class OrderService {
     private final InventoryClient inventoryClient;
     private final OrderPersistenceService orderPersistenceService;
 
+    private final OrderEventProducer orderEventProducer;
+
     public OrderService(
             OrderRepository orderRepository,
             ProductClient productClient,
             InventoryClient inventoryClient,
-            OrderPersistenceService orderPersistenceService) {
+            OrderPersistenceService orderPersistenceService,
+            OrderEventProducer orderEventProducer) {
 
         this.orderRepository = orderRepository;
         this.productClient = productClient;
         this.inventoryClient = inventoryClient;
         this.orderPersistenceService = orderPersistenceService;
+        this.orderEventProducer = orderEventProducer;
     }
 
-    // CREATE - no local transaction here
+    /**
+     *
+     * @param request
+     * @return OrderResponse
+     */
     public OrderResponse createOrder(OrderRequest request) {
 
         validateOrder(request);
@@ -51,11 +58,9 @@ public class OrderService {
 
         for (OrderItemRequest item : request.items()) {
 
-            // Get product from product-service
             ProductResponse product =
                     productClient.getProduct(item.skuCode());
 
-            // Check availability in inventory-service
             boolean available = inventoryClient.isInStock(
                     item.skuCode(), item.quantity());
 
@@ -64,7 +69,6 @@ public class OrderService {
                         item.skuCode());
             }
 
-            // If all okay - create PricedOrderItem and...
             pricedItems.add(new PricedOrderItem(
                     item.skuCode(),
                     item.quantity(),
@@ -72,9 +76,24 @@ public class OrderService {
             ));
         }
 
-        // ...save order to dbase.
-        return orderPersistenceService.saveOrder(
-                request, pricedItems);
+        // *** Save Order in LOCAL DATABASE TRANSACTION
+        OrderResponse response =
+                orderPersistenceService.saveOrder(
+                        request, pricedItems);
+
+        OrderPlacedEvent event = new OrderPlacedEvent(
+                UUID.randomUUID().toString(),
+                response.id(),
+                response.orderNumber(),
+                response.customerId(),
+                response.totalAmount(),
+                response.createdAt()
+        );
+
+        // Publish Order for Notif service
+        orderEventProducer.publishOrderPlaced(event);
+
+        return response;
     }
 
     @Transactional(readOnly = true)
@@ -184,7 +203,6 @@ public class OrderService {
     public OrderResponse createOrder(OrderRequest request) {
 
         // Remote REST calls
-
         return saveOrder(request);
     }
 
@@ -198,4 +216,19 @@ public class OrderService {
     A direct call between methods of the same object bypasses it.
 
     By using a separate Spring-managed bean, our call passes through the transaction proxy.
+ */
+
+/*
+    Because saveOrder() is executed through a separate transactional Spring bean,
+    its transaction commits before control returns to createOrder(),
+    in our current non-transactional orchestration flow.
+
+   *** However, there is still a problem:
+        What happens if the database commit succeeds but Kafka publishing fails?
+        The order exists in MySQL, but Notification Service may never receive the event.
+
+   *** This is known as the dual-write problem.
+
+    We deliberately leave this limitation for now because we will solve it using the
+    Transactional Outbox pattern later.
  */

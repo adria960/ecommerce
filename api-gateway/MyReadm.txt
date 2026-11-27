@@ -1,0 +1,22 @@
+10. Postman verification
+Start API Gateway and our existing microservices.
+
+    Operation	                URL through API Gateway
+    ------------------------------------------------------------------------------------------
+    Retrieve products	        GET http://localhost:8080/api/products
+    Retrieve product by SKU	    GET http://localhost:8080/api/products/sku/LAPTOP-001
+    Check availability	        GET http://localhost:8080/api/inventory/availability?skuCode=LAPTOP-001&quantity=2
+    Retrieve orders	            GET http://localhost:8080/api/orders
+    Create order	            POST http://localhost:8080/api/orders
+
+Create order through API Gateway
+    POST http://localhost:8080/api/orders
+    {
+        "customerId": "C001",
+        "items": [
+            {
+                "skuCode": "LAPTOP-001",
+                "quantity": 2
+            }
+        ]
+    }

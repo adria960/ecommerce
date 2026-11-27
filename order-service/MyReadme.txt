@@ -200,4 +200,5 @@ Hibernate: insert into order_items (order_id,price,quantity,sku_code) values (?,
  These endpoints are particularly useful for observing state transitions.
 
  Expose operational endpoints only to authorized users in production.
+ ---------------------------------------
 

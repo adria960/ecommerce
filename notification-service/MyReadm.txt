@@ -1,0 +1,93 @@
+17. Postman verification
+
+Scenario A – Normal operation
+---------------------------------------
+        Start:
+            - Kafka
+            - Product Service
+            - Inventory Service
+            - Order Service
+            - Notification Service
+
+    POST http://localhost:8082/api/orders
+    {
+        "customerId": "C001",
+        "items": [
+            {
+                "skuCode": "LAPTOP-001",
+                "quantity": 2
+            }
+        ]
+    }
+
+
+    Expected Order Service log (illustrative):
+    Order event published: 8a12..., partition: 1, offset: 0
+
+    Expected Notification Service log:
+    Received OrderPlacedEvent: 7b23...
+
+    Sending notification to customer C001
+    for order 8a12... Total: 1999.98
+
+    Postman receives 201 Created.
+
+
+---------------------------------------------------
+Scenario B – Notification Service unavailable
+--------------------------------------------------
+    Stop Notification Service and create another order.
+
+    Expected behaviour:
+    - Order is successfully persisted.
+    - Event is published to Kafka.
+    - Postman receives 201 Created.
+    - Notification is not processed immediately.
+    Restart Notification Service.
+
+    It should consume the pending event from Kafka using its consumer group's offset, provided the event is still retained.
+
+    This demonstrates the main advantage of asynchronous communication and temporal decoupling.
+
+--------------------------------------------------------------------------
+Scenario C – Kafka unavailable
+--------------------------------------------------------------------------
+    Stop Kafka and attempt to create an order.
+
+    The MySQL transaction can still commit successfully, but the Kafka publication can fail.
+    The producer may also block temporarily while waiting for broker metadata.
+
+    This demonstrates the dual-write problem we mentioned earlier.
+
+
+18. Useful Kafka CLI commands
+List topics:
+docker exec ecommerce-kafka \
+  /opt/kafka/bin/kafka-topics.sh \
+  --bootstrap-server localhost:9092 --list
+
+
+Describe topic:
+docker exec ecommerce-kafka \
+  /opt/kafka/bin/kafka-topics.sh \
+  --bootstrap-server localhost:9092 \
+  --describe --topic order-placed
+
+
+View messages:
+docker exec -it ecommerce-kafka \
+  /opt/kafka/bin/kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092 \
+  --topic order-placed \
+  --from-beginning \
+  --property print.key=true
+
+
+Inspect consumer group and offsets:
+docker exec ecommerce-kafka \
+  /opt/kafka/bin/kafka-consumer-groups.sh \
+  --bootstrap-server localhost:9092 \
+  --describe --group notification-service
+
+
+This last command is particularly useful for troubleshooting consumer lag.

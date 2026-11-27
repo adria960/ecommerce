@@ -7,11 +7,13 @@ import com.ecommerce.mapper.InventoryMapper;
 import com.ecommerce.model.Inventory;
 import com.ecommerce.repository.InventoryRepository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 public class InventoryService {
