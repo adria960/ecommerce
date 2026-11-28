@@ -35,7 +35,9 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/actuator/health")
+                        .requestMatchers(
+                                "/actuator/health",
+                                "/actuator/prometheus")
                         .permitAll()
 
                         .requestMatchers(
