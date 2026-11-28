@@ -1,4 +1,5 @@
 services:
+
   kafka:
     image: apache/kafka:3.9.0
     container_name: ecommerce-kafka
@@ -17,5 +18,27 @@ services:
     volumes:
       - keycloak-data:/opt/keycloak/data
 
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    container_name: ecommerce-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+
+  grafana:
+    image: grafana/grafana:11.5.2
+    container_name: ecommerce-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+
 volumes:
   keycloak-data:
+  prometheus-data:
+  grafana-data:
