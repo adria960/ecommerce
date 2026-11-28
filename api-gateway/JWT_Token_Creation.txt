@@ -41,5 +41,32 @@ Step 2 – Use the access token
     Postman automatically includes the access token in the Authorization header.
 
     --------------------------------------------------------------
+11. Postman – Obtain an access token
+Authorization tab → OAuth 2.0.
+Setting
+Value
 
-eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJSNEdFb0lDUmdRbk1CSGpGMk9hcUpxX1lWdEJiQjB1QndIdXAtcDllS25BIn0.eyJleHAiOjE3OTU4MTg1OTIsImlhdCI6MTc5NTgxODI5MiwiYXV0aF90aW1lIjoxNzk1ODE4MjkxLCJqdGkiOiI3ZDg5ZDcyOC0wNjc4LTQ0YzYtYWUyNS01YzA3YTUwOTdjZGYiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjgxODAvcmVhbG1zL2Vjb21tZXJjZSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIyOTNiYjcwYi1hZTJmLTQ4ODEtYTEzMy1kNDNkODQwYWEyMmUiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJlY29tbWVyY2UtY2xpZW50Iiwic2lkIjoiZWQ0ZWQ2NTQtMWU4OC00MDkzLWJlMjgtYjkxZGUwMWVjZDJjIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwczovL29hdXRoLnBzdG1uLmlvIl0sInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLWVjb21tZXJjZSIsIm9mZmxpbmVfYWNjZXNzIiwiQ1VTVE9NRVIiLCJ1bWFfYXV0aG9yaXphdGlvbiJdfSwicmVzb3VyY2VfYWNjZXNzIjp7ImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6ZmFsc2UsIm5hbWUiOiJKYWRyYW5rYSBTdHVwYXIiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJjdXN0b21lcjEiLCJnaXZlbl9uYW1lIjoiSmFkcmFua2EiLCJmYW1pbHlfbmFtZSI6IlN0dXBhciIsImVtYWlsIjoiYWRyaWE2MEBnbWFpbC5jb20ifQ.IoNKi0y_TjhAVtSuPlxHwWkeP1tY6hAuhEBl83MMWzZoZ5y6RdjDmoLB2p8YXrUoF2LOafkRuMkLXwYt7WwzTo2BZhI9fSDhSh8cON02pmXpxNXer64mfxwd6C_G6Fidu9mN4qcW5ZIbUxfxvj9FYryqI39FHpNeVJUIV1mj2qW7pI2JclOMoCMuKx4FgFShMZ5yTmWbZNuVIOHIi8uX0Yke2O7FLj8VL_IBjWPN5jBJcP4VziU6vILe9MQCmPM38Mg8zkjeCSsLRBDYNYv6tZA3tEVHCD0q4SMuxEHNEbMWLl1py4p00tnBAA_Hobu5kv5fEQILDNfk7L9ki4hyIg
+Grant Type
+Authorization Code (With PKCE)
+
+Callback URL
+https://oauth.pstmn.io/v1/callback
+
+Auth URL
+http://localhost:8180/realms/ecommerce/protocol/openid-connect/auth
+
+Access Token URL
+http://localhost:8180/realms/ecommerce/protocol/openid-connect/token
+
+Client ID
+ecommerce-client
+
+Client Secret
+Empty
+
+Code Challenge Method
+SHA-256
+
+Scope
+openid profile
+

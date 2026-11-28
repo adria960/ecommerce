@@ -74,7 +74,6 @@ public class ProductController {
         );
     }
 
-    // DELETE
     // DELETE – 204 No Content
     // The operation successfully deletes the resource and returns no response body.
     @DeleteMapping("/{id}")

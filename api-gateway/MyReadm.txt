@@ -75,6 +75,34 @@ Create order through API Gateway
             }
         ]
     }
-
-
     Our existing REST communication, Resilience4J, Kafka publishing and Notification Service should continue working unchanged.
+------------------------------------------
+2nd phase
+13. Authorization rules
+    Proposed initial rules:
+    Operation	        CUSTOMER	ADMIN
+    -----------------------------------------
+    View products	        Yes 	Yes
+    Create product	        No	    Yes
+    Update product      	No	    Yes
+    Delete product	        No  	Yes
+    Create order	        Yes 	Yes
+    Access order APIs	    Yes	    Yes
+    Manage inventory	    No	    Yes
+
+    The order of the request matchers matters. Spring Security evaluates the rules in declaration order
+    and applies the first matching rule.
+
+    401 versus 403
+    -------------------------------------------------------
+    HTTP status	        Meaning
+    ----------------------------
+    401 Unauthorized	Authentication is missing or invalid
+    403 Forbidden	    Authentication succeeded, but the user lacks permission
+
+    For example, customer1 tries to create a product:
+    POST http://localhost:8080/api/products
+
+    Expected response:
+    403 Forbidden
+    ---------------------

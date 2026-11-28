@@ -2,11 +2,12 @@ package com.ecommerce.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -15,7 +16,15 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(
-            HttpSecurity http) throws Exception {
+            HttpSecurity http,
+            KeycloakJwtAuthenticationConverter roleConverter)
+            throws Exception {
+
+        JwtAuthenticationConverter jwtConverter =
+                new JwtAuthenticationConverter();
+
+        jwtConverter.setJwtGrantedAuthoritiesConverter(
+                roleConverter);
 
         return http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -25,33 +34,33 @@ public class SecurityConfig {
                                 SessionCreationPolicy.STATELESS))
 
                 .authorizeHttpRequests(auth -> auth
+
                         .requestMatchers("/actuator/health")
                         .permitAll()
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/products/**")
+                        .hasAnyRole("CUSTOMER", "ADMIN")
+
+                        .requestMatchers("/api/products/**")
+                        .hasRole("ADMIN")
+
+                        .requestMatchers("/api/inventory/**")
+                        .hasRole("ADMIN")
+
+                        .requestMatchers("/api/orders/**")
+                        .hasAnyRole("CUSTOMER", "ADMIN")
+
                         .anyRequest()
-                        .authenticated()
+                        .denyAll()
                 )
 
                 .oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt(Customizer.withDefaults()))
+                        oauth2.jwt(jwt ->
+                                jwt.jwtAuthenticationConverter(
+                                        jwtConverter)))
 
                 .build();
     }
 }
-
-/*
-    Configuration explained
-        Configuration	        Purpose
-        ------------------------------------------------------------------------------------
-        csrf().disable()	    Disables CSRF protection for our bearer-token REST API
-        STATELESS	            Does not use HTTP sessions for authentication
-        permitAll()	            Allows unauthenticated access
-        authenticated()	        Requires valid authentication
-        oauth2ResourceServer()	Configures OAuth2 access token validation
-        jwt()	                Enables JWT-based authentication
-
-        We disable CSRF because our current API uses bearer tokens in the Authorization header,
-        not cookie-based authentication.
-
-        At this stage, every authenticated user can access every API.
-        We will introduce role-based authorization below.
-         */

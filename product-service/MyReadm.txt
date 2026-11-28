@@ -23,7 +23,7 @@ Content-Type: application/json
     "skuCode": "LAPTOP-001",
     "name": "Laptop",
     "description": "Lenovo ThinkPad",
-    "price": 999.99
+    "price": 999.99 // removed
 }
 resp
 {
